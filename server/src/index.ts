@@ -1,13 +1,19 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import "dotenv/config";
 import { Env } from "./config/env.config";
 import { connectDB } from "./config/db";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
+import router from "./routes";
 
 const app = express();
 
 // middleware
 app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/api", router);
 
 app.use(errorHandler);
 
