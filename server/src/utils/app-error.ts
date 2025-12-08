@@ -5,6 +5,7 @@ export const ErrorCodes = {
   ERR_BAD_REQUEST: "ERR_BAD_REQUEST",
   ERR_UNAUTHORIZED: "ERR_UNAUTHORIZED",
   ERR_FORBIDDEN: "ERR_FORBIDDEN",
+  VALIDATION_ERROR: "ERR_VALIDATION",
   ERR_NOT_FOUND: "ERR_NOT_FOUND",
 } as const;
 export type ErrorCodeType = keyof typeof ErrorCodes;
