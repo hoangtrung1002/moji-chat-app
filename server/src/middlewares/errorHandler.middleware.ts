@@ -34,7 +34,7 @@ export const errorHandler: ErrorRequestHandler = (
   }
 
   if (error instanceof AppError) {
-    return res.status(HTTPSTATUS.INTERNAL_SERVER_ERROR).json({
+    return res.status(error.statusCode).json({
       message: error.message,
       errorCode: error.errorCode,
     });

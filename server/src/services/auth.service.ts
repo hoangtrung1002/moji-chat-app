@@ -12,7 +12,7 @@ import {
 } from "../validators/auth.validator";
 
 const ACCESS_TOKEN_TTL = "30m";
-const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000;
+export const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000;
 
 export async function signUpService(body: signUpSchemaType) {
   const { username, firstName, lastName, email, password } = body;
@@ -43,7 +43,7 @@ export async function signInService(body: signInSchemaType) {
   if (!user) throw new UnauthorizedException("Invalid credentials");
 
   // check password
-  const isPasswordValid = compareValue(password, user.hashedPassword);
+  const isPasswordValid = await compareValue(password, user.hashedPassword);
   if (!isPasswordValid) throw new UnauthorizedException("Invalid credentials");
 
   // create access token
