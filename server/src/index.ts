@@ -5,6 +5,7 @@ import { Env } from "./config/env.config";
 import { connectDB } from "./config/db";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import router from "./routes";
+import cors from "cors";
 
 const app = express();
 
@@ -12,6 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({ origin: Env.FRONTEND_ORIGIN, credentials: true }));
 
 app.use("/api", router);
 

@@ -1,8 +1,12 @@
 import { signInSchema, type signInSchemaType } from "@/lib/validations/auth";
+import { useAuthStore } from "@/stores/use-auth-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 const useSignInForm = () => {
+  const { signIn } = useAuthStore();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -12,7 +16,9 @@ const useSignInForm = () => {
   });
 
   const onSubmit = async (data: signInSchemaType) => {
-    console.log(data);
+    const { identifier, password } = data;
+    await signIn(identifier, password);
+    navigate("/");
   };
 
   return {

@@ -1,7 +1,11 @@
-import React from "react";
+import SignOut from "@/components/auth/signout";
 
 const ChatApp = () => {
-  return <div>ChatApp</div>;
+  return (
+    <div>
+      <SignOut />
+    </div>
+  );
 };
 
 export default ChatApp;

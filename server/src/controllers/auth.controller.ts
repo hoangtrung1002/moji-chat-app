@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import { signInSchema, signUpSchema } from "../validators/auth.validator";
 import {
+  REFRESH_TOKEN_TTL,
   signInService,
   signOutService,
   signUpService,
@@ -24,10 +25,10 @@ export const signInController = asyncHandler(
     const body = signInSchema.parse(req.body);
     const { user, refreshToken, accessToken } = await signInService(body);
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true, // cookie isn't accessed via JS
-      secure: Env.NODE_ENV === "production" ? true : false, // true: only send to https
-      sameSite: "none", // backend, frontend deploy separately
-      // sameSite: Env.NODE_ENV === "production" ? "strict" : "lax",
+      httpOnly: true,
+      secure: true,
+      sameSite: "none", //backend, frontend deploy riêng
+      maxAge: REFRESH_TOKEN_TTL,
     });
 
     return res
@@ -36,14 +37,16 @@ export const signInController = asyncHandler(
   }
 );
 
-export const signOut = asyncHandler(async (req: Request, res: Response) => {
-  // get refresh token from cookie
-  const token = req.cookies?.refreshToken;
-  // delete refresh token from database
-  await signOutService(token);
-  // delete refresh token from cookie
-  res.clearCookie("refreshToken");
-  return res
-    .status(HTTPSTATUS.OK)
-    .json({ message: "User logout successfully" });
-});
+export const signOutController = asyncHandler(
+  async (req: Request, res: Response) => {
+    // get refresh token from cookie
+    const token = req.cookies?.refreshToken;
+    // delete refresh token from database
+    await signOutService(token);
+    // delete refresh token from cookie
+    res.clearCookie("refreshToken");
+    return res
+      .status(HTTPSTATUS.OK)
+      .json({ message: "User logout successfully" });
+  }
+);
