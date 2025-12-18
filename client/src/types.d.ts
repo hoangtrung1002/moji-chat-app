@@ -11,6 +11,7 @@ interface IUser {
 }
 interface IAuthState {
   accessToken: string | null;
+  setAccessToken: (accessToken: string) => void;
   user: IUser | null;
   loading: boolean;
   clearState: () => void;
@@ -23,6 +24,8 @@ interface IAuthState {
   ) => Promise<void>;
   signIn: (identifier: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  fetchMe: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 interface IDefaultResponse {
@@ -30,5 +33,13 @@ interface IDefaultResponse {
 }
 
 interface ISignInResponse extends IDefaultResponse {
+  accessToken: string;
+}
+
+interface IFetchMeResponse {
+  user: IUser;
+}
+
+interface IRefreshResponse {
   accessToken: string;
 }

@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/stores/use-auth-store";
 import axios, { type AxiosRequestConfig } from "axios";
 
 const BASE_URL =
@@ -8,10 +9,60 @@ const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true, // allow cookie send to server
 });
+// attach token to header
+api.interceptors.request.use((config) => {
+  const { accessToken } = useAuthStore.getState();
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  return config;
+});
+
+// automatically call refresh token when token expired
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    // exclude api
+    if (
+      originalRequest.url.includes("/auth/signin") ||
+      originalRequest.url.includes("/auth/signup") ||
+      originalRequest.url.includes("/auth/refresh")
+    ) {
+      return Promise.reject(error);
+    }
+
+    originalRequest._retryCount = originalRequest._retryCount || 0;
+
+    if (error.response?.status === 403 && originalRequest._retryCount < 4) {
+      originalRequest._retryCount += 1;
+      console.log("refresh", originalRequest._retryCount);
+
+      try {
+        const response = await postData<IRefreshResponse>(
+          "/auth/refresh",
+          undefined,
+          {
+            withCredentials: true,
+          }
+        );
+        const newAccessToken = response.accessToken;
+        useAuthStore.getState().setAccessToken(newAccessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        useAuthStore.getState().clearState();
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 const postData = async <T, D = unknown>(
   url: string,
-  data: D,
+  data?: D,
   config?: AxiosRequestConfig
 ): Promise<T> => {
   const response = await api.post<T>(url, data, config);

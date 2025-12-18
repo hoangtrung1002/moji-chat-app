@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { userPoint } from "../controllers/user.controller";
+import { authMe, test } from "../controllers/user.controller";
 
-const userRoutes = Router().get("/", userPoint);
+const userRoutes = Router().get("/me", authMe).get("/test", test);
 
 export default userRoutes;

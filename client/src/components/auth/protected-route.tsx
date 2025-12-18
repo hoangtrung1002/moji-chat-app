@@ -1,0 +1,34 @@
+import { useAuthStore } from "@/stores/use-auth-store";
+import { useEffect, useState } from "react";
+import { Navigate, Outlet } from "react-router";
+
+const ProtectedRoute = () => {
+  const { loading, user, accessToken, refresh, fetchMe } = useAuthStore();
+  const [starting, setStarting] = useState(true);
+
+  useEffect(() => {
+    const init = async () => {
+      if (!accessToken) {
+        await refresh();
+      }
+      if (accessToken && !user) {
+        await fetchMe();
+      }
+      setStarting(false);
+    };
+    init();
+  }, [accessToken, fetchMe, refresh, user]);
+
+  if (starting || loading)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        Đang tải trang...
+      </div>
+    );
+
+  if (!accessToken) return <Navigate to="/signin" replace />;
+
+  return <Outlet />;
+};
+
+export default ProtectedRoute;

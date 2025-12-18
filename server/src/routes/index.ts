@@ -8,6 +8,6 @@ const router = express.Router();
 router.use("/auth", authRoutes);
 
 // private routes
-router.use("/user", isAuthenticated, userRoutes);
+router.use("/users", isAuthenticated, userRoutes);
 
 export default router;
