@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { Env } from "../config/env.config";
 import SessionModel from "../models/Session.model";
 import UserModel from "../models/User.model";
-import { UnauthorizedException } from "../utils/app-error";
+import { ForbiddenException, UnauthorizedException } from "../utils/app-error";
 import { compareValue, hashValue } from "../utils/bcrypt";
 import {
   emailSchema,
@@ -66,4 +66,24 @@ export async function signInService(body: signInSchemaType) {
 export async function signOutService(token: string) {
   if (!token) return;
   await SessionModel.deleteOne({ refreshToken: token });
+}
+
+export async function refreshTokenService(refreshToken: string) {
+  // retrieve token from cookie and check
+  if (!refreshToken) throw new UnauthorizedException("Token không tồn tại.");
+
+  // check if it exist in database
+  const session = await SessionModel.findOne({ refreshToken });
+  if (!session)
+    throw new ForbiddenException("Token không hợp lệ hoặc đã hết hạn");
+
+  // check session's expire
+  if (session.expiresAt < new Date())
+    throw new ForbiddenException("Token đã hết hạn");
+
+  // create a new access token
+  const accessToken = jwt.sign({ userId: session.userId }, Env.JWT_SECRET, {
+    expiresIn: ACCESS_TOKEN_TTL,
+  });
+  return accessToken;
 }

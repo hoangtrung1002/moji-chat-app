@@ -3,6 +3,7 @@ import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import { signInSchema, signUpSchema } from "../validators/auth.validator";
 import {
   REFRESH_TOKEN_TTL,
+  refreshTokenService,
   signInService,
   signOutService,
   signUpService,
@@ -48,5 +49,13 @@ export const signOutController = asyncHandler(
     return res
       .status(HTTPSTATUS.OK)
       .json({ message: "User logout successfully" });
+  }
+);
+
+export const refreshTokenController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const refreshToken = req.cookies?.refreshToken;
+    const accessToken = await refreshTokenService(refreshToken);
+    return res.status(HTTPSTATUS.OK).json({ accessToken });
   }
 );

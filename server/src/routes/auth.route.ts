@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  refreshTokenController,
   signInController,
   signOutController,
   signUpController,
@@ -8,6 +9,7 @@ import {
 const authRoutes = Router()
   .post("/signup", signUpController)
   .post("/signin", signInController)
-  .post("/signout", signOutController);
+  .post("/signout", signOutController)
+  .post("/refresh", refreshTokenController);
 
 export default authRoutes;
