@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
 
-interface IMessage extends mongoose.Document {
+interface IMessage {
   conversationId: mongoose.Types.ObjectId;
   senderId: mongoose.Types.ObjectId;
   content: string;
@@ -8,6 +8,8 @@ interface IMessage extends mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type MessageDocument = HydratedDocument<IMessage>;
 
 export const messageSchema = new mongoose.Schema<IMessage>(
   {

@@ -60,14 +60,13 @@ export async function acceptFriendRequestService(
     .select("_id displayName avatarUrl")
     .lean(); // lean() -> the result is JSObject instead of MongoDocument
 
-  return {
-    message: "Chấp nhận lời mời kết bạn thành công",
-    newFriend: {
-      _id: from?._id,
-      displayName: from?.displayName,
-      avatarUrl: from?.avatarUrl,
-    },
+  const newFriend = {
+    _id: from?._id,
+    displayName: from?.displayName,
+    avatarUrl: from?.avatarUrl,
   };
+
+  return newFriend;
 }
 
 export async function declineFriendRequestService(
@@ -85,11 +84,12 @@ export async function declineFriendRequestService(
 export async function getAllFriendsService(userId: string) {
   const friendships = await friendModel
     .find({
-      $or: [{ userA: userId, userB: userId }],
+      $or: [{ userA: userId }, { userB: userId }],
     })
     .populate("userA", "_id displayName avatarUrl")
     .populate("userB", "_id displayName avatarUrl")
     .lean();
+
   if (!friendships) return [];
 
   const friends = friendships.map((friend) =>
