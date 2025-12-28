@@ -42,12 +42,11 @@ export const acceptFriendRequestController = asyncHandler(
   async (req: Request, res: Response) => {
     const { requestId } = req.params;
     const userId = req.user._id;
-    const { message, newFriend } = await acceptFriendRequestService(
-      requestId,
-      userId
-    );
+    const newFriend = await acceptFriendRequestService(requestId, userId);
 
-    return res.json(HTTPSTATUS.OK).json({ message, newFriend });
+    return res
+      .status(HTTPSTATUS.OK)
+      .json({ message: "Chấp nhận lời mời kết bạn thành công", newFriend });
   }
 );
 export const declineFriendRequestController = asyncHandler(
@@ -56,6 +55,6 @@ export const declineFriendRequestController = asyncHandler(
     const userId = req.user._id;
     await declineFriendRequestService(requestId, userId);
 
-    return res.json(HTTPSTATUS.OK);
+    return res.status(HTTPSTATUS.OK);
   }
 );
