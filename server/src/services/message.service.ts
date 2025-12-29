@@ -1,5 +1,5 @@
 import ConversationModel from "../models/Conversation.model";
-import MessageModel from "../models/Message.model";
+import MessageModel, { IMessage } from "../models/Message.model";
 import { BadRequestException } from "../utils/app-error";
 import { updateConversationAfterCreateMessage } from "../utils/messageHelper";
 
@@ -36,4 +36,27 @@ export async function sendDirectMessageService(
   updateConversationAfterCreateMessage(conversation, message, senderId);
   await conversation.save();
   return message;
+}
+
+export async function getMessagesService(
+  conversationId: string,
+  limit: number,
+  cursor?: string
+) {
+  const query: Record<string, unknown> = { conversationId };
+  if (cursor) {
+    query.createAt = { $lt: new Date(cursor) };
+  }
+  let messages = await MessageModel.find(query)
+    .sort({ createdAt: -1 })
+    .limit(limit + 1); // limit = 10 -> if messages have 11 items that means we can load more
+
+  let nextCursor = null;
+  if (messages.length > limit) {
+    const nextMessage = messages[messages.length - 1];
+    nextCursor = nextMessage.createdAt.toISOString();
+    messages.pop();
+  }
+  messages = messages.reverse();
+  return { messages, nextCursor };
 }

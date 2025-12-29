@@ -11,8 +11,9 @@ export async function checkFriendShip(
   try {
     const me = req.user._id.toString();
     const recipientId = req.body?.recipientId ?? null;
+    const memberIds = req.body?.memberIds ?? [];
 
-    if (!recipientId)
+    if (!recipientId && memberIds.length === 0)
       return res
         .status(HTTPSTATUS.BAD_REQUEST)
         .json({ message: "Cần cung cấp recipientId hoặc memberIds" });
@@ -26,7 +27,20 @@ export async function checkFriendShip(
           .json({ message: "Bạn chưa kết bạn với người này" });
       return next();
     }
-    // TODO: CHAT GROUP
+
+    const friendChecks = memberIds.map(async (memberId: string) => {
+      const [userA, userB] = pair(me, memberId);
+      const friend = await friendModel.findOne({ userA, userB });
+      return friend ? null : memberId;
+    });
+    const results = await Promise.all(friendChecks);
+    const notFriends = results.filter(Boolean);
+    if (notFriends.length > 0) {
+      return res
+        .status(HTTPSTATUS.FORBIDDEN)
+        .json({ message: "Bạn chỉ có thể thêm bạn bè vào nhóm.", notFriends });
+    }
+    next();
   } catch (error) {
     console.error("Lỗi xảy ra khi checkFriendship:", error);
     return res.status(500).json({ message: "Lỗi hệ thống" });

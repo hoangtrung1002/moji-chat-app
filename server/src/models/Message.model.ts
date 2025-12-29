@@ -1,6 +1,6 @@
 import mongoose, { HydratedDocument } from "mongoose";
 
-interface IMessage {
+export interface IMessage {
   conversationId: mongoose.Types.ObjectId;
   senderId: mongoose.Types.ObjectId;
   content: string;

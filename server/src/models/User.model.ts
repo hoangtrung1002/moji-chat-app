@@ -1,6 +1,6 @@
-import mongoose, { Types } from "mongoose";
+import mongoose, { HydratedDocument, Types } from "mongoose";
 
-interface IUser extends mongoose.Document {
+export interface IUser {
   username: string;
   hashedPassword: string;
   email: string;
@@ -12,6 +12,8 @@ interface IUser extends mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type UserDocument = HydratedDocument<IUser>;
 
 const userSchema = new mongoose.Schema<IUser>(
   {

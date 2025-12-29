@@ -14,6 +14,6 @@ router.use("/auth", authRoutes);
 router.use("/users", isAuthenticated, userRoutes);
 router.use("/friends", isAuthenticated, friendRoutes);
 router.use("/message", isAuthenticated, messageRouter);
-router.use("/conversation", isAuthenticated, conversationRoutes);
+router.use("/conversations", isAuthenticated, conversationRoutes);
 
 export default router;
