@@ -5,6 +5,8 @@ import {
   createConversationService,
   getConversationService,
 } from "../services/conversation.service";
+import { getMessagesService } from "../services/message.service";
+import { getMessagesQuerySchema } from "../validators/common";
 
 export const createConversation = asyncHandler(
   async (req: Request, res: Response) => {
@@ -21,6 +23,13 @@ export const getConversations = asyncHandler(
     return res.status(HTTPSTATUS.OK).json({ conversations });
   }
 );
-export const getMessages = asyncHandler(
-  async (req: Request, res: Response) => {}
-);
+export const getMessages = asyncHandler(async (req: Request, res: Response) => {
+  const { conversationId } = req.params;
+  const { limit, cursor } = getMessagesQuerySchema.parse(req.query);
+  const { messages, nextCursor } = await getMessagesService(
+    conversationId,
+    limit,
+    cursor
+  );
+  return res.status(HTTPSTATUS.OK).json({ messages, nextCursor });
+});
