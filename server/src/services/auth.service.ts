@@ -24,7 +24,7 @@ export async function signUpService(body: signUpSchemaType) {
     username,
     hashedPassword,
     email,
-    displayName: `${firstName} ${lastName}`,
+    displayName: `${lastName} ${firstName}`,
   });
   return newUser;
 }
