@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware";
-import { sendDirectMessageService } from "../services/message.service";
+import {
+  sendDirectMessageService,
+  sendGroupMessageService,
+} from "../services/message.service";
 import { HTTPSTATUS } from "../config/http.config";
 
 export const sendDirectMessageController = asyncHandler(
@@ -19,5 +22,16 @@ export const sendDirectMessageController = asyncHandler(
   }
 );
 export const sendGroupMessageController = asyncHandler(
-  async (req: Request, res: Response) => {}
+  async (req: Request, res: Response) => {
+    const { conversationId, content } = req.body;
+    const senderId = req.user._id;
+    const conversation = req?.conversation;
+    const groupMessage = await sendGroupMessageService(
+      conversationId,
+      content,
+      senderId,
+      conversation
+    );
+    return res.status(HTTPSTATUS.CREATED).json({ groupMessage });
+  }
 );

@@ -3,10 +3,13 @@ import {
   sendDirectMessageController,
   sendGroupMessageController,
 } from "../controllers/message.controller";
-import { checkFriendShip } from "../middlewares/friend.middleware";
+import {
+  checkFriendShip,
+  checkGroupMembership,
+} from "../middlewares/friend.middleware";
 
 const messageRouter = Router()
   .post("/direct", checkFriendShip, sendDirectMessageController)
-  .post("/group", sendGroupMessageController);
+  .post("/group", checkGroupMembership, sendGroupMessageController);
 
 export default messageRouter;

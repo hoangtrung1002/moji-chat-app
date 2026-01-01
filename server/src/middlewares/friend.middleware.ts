@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { HTTPSTATUS } from "../config/http.config";
+import ConversationModel from "../models/Conversation.model";
 import friendModel from "../models/Friend.model";
 
 const pair = (a: string, b: string) => (a < b ? [a, b] : [b, a]);
@@ -44,5 +45,37 @@ export async function checkFriendShip(
   } catch (error) {
     console.error("Lỗi xảy ra khi checkFriendship:", error);
     return res.status(500).json({ message: "Lỗi hệ thống" });
+  }
+}
+
+export async function checkGroupMembership(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { conversationId } = req.body;
+    const userId = req.user._id;
+    const conversation = await ConversationModel.findById(conversationId);
+    if (!conversation)
+      return res
+        .status(HTTPSTATUS.NOT_FOUND)
+        .json({ message: "Không tìm thấy cuộc trò chuyện" });
+
+    const isMember = conversation.participants.some(
+      (p) => p.userId.toString() === userId.toString()
+    );
+    if (!isMember) {
+      return res
+        .status(HTTPSTATUS.BAD_REQUEST)
+        .json({ message: "Bạn không ở trong group này." });
+    }
+    req.conversation = conversation;
+    next();
+  } catch (error) {
+    console.error("Lỗi checkGroupMembership:", error);
+    return res
+      .status(HTTPSTATUS.INTERNAL_SERVER_ERROR)
+      .json({ message: "Lỗi hệ thống" });
   }
 }

@@ -1,5 +1,7 @@
-import ConversationModel from "../models/Conversation.model";
-import MessageModel, { IMessage } from "../models/Message.model";
+import ConversationModel, {
+  ConversationDocument,
+} from "../models/Conversation.model";
+import MessageModel from "../models/Message.model";
 import { BadRequestException } from "../utils/app-error";
 import { updateConversationAfterCreateMessage } from "../utils/messageHelper";
 
@@ -59,4 +61,24 @@ export async function getMessagesService(
   }
   messages = messages.reverse();
   return { messages, nextCursor };
+}
+
+export async function sendGroupMessageService(
+  conversationId: string,
+  content: string,
+  senderId: string,
+  conversation?: ConversationDocument
+) {
+  if (!conversation)
+    throw new BadRequestException("Không tìm thấy cuộc trò chuyện");
+  if (!content) throw new BadRequestException("Thiếu nội dung");
+  const message = await MessageModel.create({
+    conversationId,
+    senderId,
+    content,
+  });
+  updateConversationAfterCreateMessage(conversation, message, senderId);
+  await conversation.save();
+
+  return message;
 }
