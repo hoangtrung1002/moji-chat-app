@@ -1,4 +1,10 @@
 import { fetchData, postData } from "@/lib/axios";
+import type {
+  IDefaultResponse,
+  IFetchMeResponse,
+  IRefreshResponse,
+  ISignInResponse,
+} from "@/types";
 
 export const authService = {
   signUp: async (

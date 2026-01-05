@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/stores/use-auth-store";
+import type { IRefreshResponse } from "@/types";
 import axios, { type AxiosRequestConfig } from "axios";
 
 const BASE_URL =
