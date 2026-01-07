@@ -14,6 +14,7 @@ const GroupChatCard = ({ conversation }: { conversation: IConversation }) => {
     messages,
     setActiveConversation,
   });
+  console.log(user);
 
   if (!user) return null;
 
