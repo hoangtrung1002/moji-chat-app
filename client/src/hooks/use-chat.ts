@@ -1,3 +1,4 @@
+import { useChatStore } from "@/stores/use-chat-store";
 import type { IMessage } from "@/types";
 
 interface IProp {
@@ -13,10 +14,11 @@ interface IProp {
 }
 
 const useChat = ({ setActiveConversation, messages }: IProp) => {
-  const handleSelectConversation = (id: string) => {
+  const { fetchMessages } = useChatStore();
+  const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
     if (!messages[id]) {
-      // TODO: fetch messages
+      await fetchMessages();
     }
   };
 

@@ -9,7 +9,6 @@ const DirectMessageList = () => {
   const directConversations = conversations.filter(
     (conversation: IConversation) => conversation.type === "direct"
   );
-  console.log(directConversations);
   return (
     <div className="flex-1 p-2 space-y-2 overflow-y-auto">
       {directConversations.map((conversation: IConversation) => (
