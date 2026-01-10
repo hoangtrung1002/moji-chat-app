@@ -51,13 +51,14 @@ export const useChatStore = create<IChatState>()(
             convoId,
             nextCursor
           );
+
           const processed = data.map((message) => ({
             ...message,
             isOwn: message.senderId === user?._id, // to render message from 2 different direction
           }));
 
           set((state) => {
-            const prev = state.messages[convoId].items ?? [];
+            const prev = state.messages[convoId]?.items ?? [];
             const merged =
               prev.length > 0 ? [...processed, ...prev] : processed;
 
