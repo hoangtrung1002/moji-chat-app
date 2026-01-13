@@ -1,5 +1,4 @@
 import { useAuthStore } from "@/stores/use-auth-store";
-import type { IRefreshResponse } from "@/types";
 import axios, { type AxiosRequestConfig } from "axios";
 
 const BASE_URL =
@@ -21,10 +20,11 @@ api.interceptors.request.use((config) => {
 
 // automatically call refresh token when token expired
 api.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   async (error) => {
     const originalRequest = error.config;
-    // exclude api
+
+    // những api không cần check
     if (
       originalRequest.url.includes("/auth/signin") ||
       originalRequest.url.includes("/auth/signup") ||
@@ -37,17 +37,11 @@ api.interceptors.response.use(
 
     if (error.response?.status === 403 && originalRequest._retryCount < 4) {
       originalRequest._retryCount += 1;
-      console.log("refresh", originalRequest._retryCount);
 
       try {
-        const response = await postData<IRefreshResponse>(
-          "/auth/refresh",
-          undefined,
-          {
-            withCredentials: true,
-          }
-        );
-        const newAccessToken = response.accessToken;
+        const res = await api.post("/auth/refresh", { withCredentials: true });
+        const newAccessToken = res.data.accessToken;
+
         useAuthStore.getState().setAccessToken(newAccessToken);
 
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -57,6 +51,7 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
+
     return Promise.reject(error);
   }
 );

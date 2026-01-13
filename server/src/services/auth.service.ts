@@ -11,13 +11,16 @@ import {
   signUpSchemaType,
 } from "../validators/auth.validator";
 
-const ACCESS_TOKEN_TTL = "30m";
+const ACCESS_TOKEN_TTL = "3d";
 export const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60 * 1000;
 
 export async function signUpService(body: signUpSchemaType) {
   const { username, firstName, lastName, email, password } = body;
-  const duplicate = await UserModel.findOne({ username });
-  if (duplicate) throw new UnauthorizedException("User already exist");
+  const duplicateUsernameOrEmail = await UserModel.findOne({
+    $or: [{ username }, { email }],
+  });
+  if (duplicateUsernameOrEmail)
+    throw new UnauthorizedException("User or email already exist");
 
   const hashedPassword = await hashValue(password);
   const newUser = UserModel.create({

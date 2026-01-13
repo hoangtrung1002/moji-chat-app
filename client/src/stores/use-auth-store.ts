@@ -16,8 +16,9 @@ export const useAuthStore = create<IAuthState>()(
 
       clearState: () => {
         set({ accessToken: null, user: null, loading: false });
-        localStorage.clear();
         useChatStore.getState().reset();
+        localStorage.clear();
+        sessionStorage.clear();
       },
       signUp: async (username, password, email, firstName, lastName) => {
         try {
@@ -32,19 +33,20 @@ export const useAuthStore = create<IAuthState>()(
           toast.success(
             "Đăng ký thành công! Bạn sẽ được chuyển sang trang đăng nhập."
           );
-        } catch (error) {
+        } catch (error: any) {
           console.error(error);
-          toast.error("Đăng ký không thành công.");
+          toast.error(error.response.data.message);
         } finally {
           set({ loading: false });
         }
       },
       signIn: async (identifier, password) => {
         try {
+          get().clearState();
           set({ loading: true });
 
-          localStorage.clear();
-          useChatStore.getState().reset();
+          // localStorage.clear();
+          // useChatStore.getState().reset();
 
           const { accessToken } = await authService.signIn(
             identifier,
@@ -81,6 +83,7 @@ export const useAuthStore = create<IAuthState>()(
           set({ user });
         } catch (error) {
           console.error(error);
+          set({ user: null, accessToken: null });
           toast.error("Lỗi xảy ra khi lấy dữ liệu người dùng, Hãy thử lại!");
         } finally {
           set({ loading: false });
@@ -92,7 +95,9 @@ export const useAuthStore = create<IAuthState>()(
           set({ loading: true });
           const { user, fetchMe, setAccessToken } = get();
           const accessToken = await authService.refresh();
+
           setAccessToken(accessToken);
+
           if (!user) {
             await fetchMe();
           }
@@ -106,6 +111,11 @@ export const useAuthStore = create<IAuthState>()(
       },
     }),
     // partialize: allow indicate which state will be store in local storage
-    { name: "auth-storage", partialize: (state) => ({ user: state.user }) }
+    {
+      name: "auth-storage",
+      partialize: (state) => ({
+        user: state.user,
+      }),
+    }
   )
 );

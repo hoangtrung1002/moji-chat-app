@@ -1,14 +1,15 @@
+import useChat from "@/hooks/use-chat";
 import { useAuthStore } from "@/stores/use-auth-store";
 import type { IConversation } from "@/types";
-import { useState } from "react";
-import { Button } from "../ui/button";
 import { ImagePlus, Send } from "lucide-react";
+import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import EmojiPicker from "./emoji-picker";
 
 const MessageInput = ({ selectedConvo }: { selectedConvo: IConversation }) => {
   const { user } = useAuthStore();
-  const [value, setValue] = useState("");
+  const { sendMessage, value, setValue, handleKeyPress } =
+    useChat(selectedConvo);
 
   if (!user) return;
 
@@ -23,6 +24,7 @@ const MessageInput = ({ selectedConvo }: { selectedConvo: IConversation }) => {
       </Button>
       <div className="flex-1 relative">
         <Input
+          onKeyDown={handleKeyPress}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Soạn tin nhắn..."
@@ -44,6 +46,7 @@ const MessageInput = ({ selectedConvo }: { selectedConvo: IConversation }) => {
         </div>
       </div>
       <Button
+        onClick={sendMessage}
         className="bg-gradient-chat hover:shadow-glow transition-smooth hover:scale-105"
         disabled={!value.trim()}
       >

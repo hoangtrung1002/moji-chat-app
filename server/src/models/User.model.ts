@@ -1,4 +1,5 @@
 import mongoose, { HydratedDocument, Types } from "mongoose";
+import { UnauthorizedException } from "../utils/app-error";
 
 export interface IUser {
   username: string;
@@ -30,6 +31,7 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     email: {
       type: String,
+      required: true,
       unique: true,
       lowercase: true,
       trim: true,
@@ -52,6 +54,14 @@ const userSchema = new mongoose.Schema<IUser>(
     timestamps: true,
   }
 );
+
+userSchema.post("save", function (error: any, doc: any, next: any) {
+  if (error.name === "MongoServerError" && error.code === 11000) {
+    next(new UnauthorizedException("User or email already exist"));
+  } else {
+    next(error);
+  }
+});
 
 const UserModel = mongoose.model<IUser>("User", userSchema);
 export default UserModel;

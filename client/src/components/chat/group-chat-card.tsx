@@ -8,12 +8,8 @@ import GroupChatAvatar from "./group-chat-avatar";
 
 const GroupChatCard = ({ conversation }: { conversation: IConversation }) => {
   const { user } = useAuthStore();
-  const { activeConversationId, setActiveConversation, messages } =
-    useChatStore();
-  const { handleSelectConversation } = useChat({
-    messages,
-    setActiveConversation,
-  });
+  const { activeConversationId } = useChatStore();
+  const { handleSelectConversation } = useChat();
 
   if (!user) return null;
 

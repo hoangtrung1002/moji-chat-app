@@ -1,11 +1,11 @@
 import { signUpSchema, type signUpSchemaType } from "@/lib/validations/auth";
-import { useAuthStore } from "@/stores/use-auth-store";
+import { authService } from "@/services/auth-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const useSignUpForm = () => {
-  const { signUp } = useAuthStore();
   const navigate = useNavigate();
   const {
     register,
@@ -16,10 +16,17 @@ const useSignUpForm = () => {
   });
 
   const onSubmit = async (data: signUpSchemaType) => {
-    const { email, firstName, lastName, password, username } = data;
-
-    await signUp(username, password, email, firstName, lastName);
-    navigate("/signin");
+    try {
+      const { email, firstName, lastName, password, username } = data;
+      await authService.signUp(username, password, email, firstName, lastName);
+      toast.success(
+        "Đăng ký thành công! Bạn sẽ được chuyển sang trang đăng nhập."
+      );
+      navigate("/signin");
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
   };
 
   return {

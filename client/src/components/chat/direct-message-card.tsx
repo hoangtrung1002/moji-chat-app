@@ -3,10 +3,9 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/use-auth-store";
 import type { IConversation, IParticipant } from "@/types";
 import ChatCard from "./chat-card";
-import { useChatStore } from "@/stores/use-chat-store";
-import UserAvatar from "./user-avatar";
 import StatusBadge from "./status-badge";
 import UnreadBadge from "./unread-badge";
+import UserAvatar from "./user-avatar";
 
 const DirectMessageCard = ({
   conversation,
@@ -14,14 +13,10 @@ const DirectMessageCard = ({
   conversation: IConversation;
 }) => {
   const { user } = useAuthStore();
-  const { activeConversationId, setActiveConversation, messages } =
-    useChatStore();
-  const { handleSelectConversation } = useChat({
-    messages,
-    setActiveConversation,
-  });
 
-  if (!user) return null;
+  const { handleSelectConversation, activeConversationId } = useChat();
+
+  if (!user) return;
 
   const otherUser = conversation.participants.find(
     (p: IParticipant) => p._id !== user._id
