@@ -9,7 +9,6 @@ import {
   signUpService,
 } from "../services/auth.service";
 import { HTTPSTATUS } from "../config/http.config";
-import { Env } from "../config/env.config";
 
 export const signUpController = asyncHandler(
   async (req: Request, res: Response) => {
