@@ -1,8 +1,17 @@
+import type { Socket } from "socket.io-client";
+
 interface IThemeState {
   isDark: boolean;
   toggleTheme: () => void;
   setTheme: (dark: boolean) => void;
 }
+
+interface ISocketState {
+  socket: Socket | null;
+  connectSocket: () => void;
+  disconnectSocket: () => void;
+}
+
 interface IChatState {
   conversations: Conversation[];
   messages: Record<
