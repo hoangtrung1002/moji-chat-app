@@ -1,10 +1,7 @@
 import { useAuthStore } from "@/stores/use-auth-store";
 import axios, { type AxiosRequestConfig } from "axios";
 
-const BASE_URL =
-  import.meta.env.MODE === "development"
-    ? import.meta.env.VITE_API_URL
-    : "/api";
+const BASE_URL = import.meta.env.VITE_API_URL;
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true, // allow cookie send to server

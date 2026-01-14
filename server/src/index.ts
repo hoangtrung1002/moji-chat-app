@@ -6,8 +6,7 @@ import { connectDB } from "./config/db";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import router from "./routes";
 import cors from "cors";
-
-const app = express();
+import { app, server } from "./socket";
 
 // middleware
 app.use(express.json());
@@ -20,7 +19,7 @@ app.use("/api", router);
 app.use(errorHandler);
 
 connectDB().then(() => {
-  app.listen(Env.PORT, () => {
+  server.listen(Env.PORT, () => {
     console.log(`Server running on port ${Env.PORT} in ${Env.NODE_ENV} mode`);
   });
 });
