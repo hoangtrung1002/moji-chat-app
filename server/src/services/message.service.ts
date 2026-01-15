@@ -2,8 +2,12 @@ import ConversationModel, {
   ConversationDocument,
 } from "../models/Conversation.model";
 import MessageModel from "../models/Message.model";
+import { io } from "../socket";
 import { BadRequestException } from "../utils/app-error";
-import { updateConversationAfterCreateMessage } from "../utils/messageHelper";
+import {
+  emitNewMessage,
+  updateConversationAfterCreateMessage,
+} from "../utils/messageHelper";
 
 export async function sendDirectMessageService(
   recipientId: string,
@@ -37,6 +41,7 @@ export async function sendDirectMessageService(
 
   updateConversationAfterCreateMessage(conversation, message, senderId);
   await conversation.save();
+  emitNewMessage(io, conversation, message);
   return message;
 }
 
@@ -79,6 +84,6 @@ export async function sendGroupMessageService(
   });
   updateConversationAfterCreateMessage(conversation, message, senderId);
   await conversation.save();
-
+  emitNewMessage(io, conversation, message);
   return message;
 }

@@ -8,6 +8,7 @@ interface IThemeState {
 
 interface ISocketState {
   socket: Socket | null;
+  onlineUsers: string[];
   connectSocket: () => void;
   disconnectSocket: () => void;
 }
@@ -39,6 +40,10 @@ interface IChatState {
     content: string,
     imgUrl?: string
   ) => Promise<void>;
+  // add message
+  addMessage: (message: IMessage) => Promise<void>;
+  // update conversation
+  updateConversation: (conversation: IConversation) => void;
 }
 
 interface IAuthState {

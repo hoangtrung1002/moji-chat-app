@@ -6,6 +6,7 @@ import ChatCard from "./chat-card";
 import StatusBadge from "./status-badge";
 import UnreadBadge from "./unread-badge";
 import UserAvatar from "./user-avatar";
+import { useSocketStore } from "@/stores/use-socket-store";
 
 const DirectMessageCard = ({
   conversation,
@@ -13,7 +14,7 @@ const DirectMessageCard = ({
   conversation: IConversation;
 }) => {
   const { user } = useAuthStore();
-
+  const { onlineUsers } = useSocketStore();
   const { handleSelectConversation, activeConversationId } = useChat();
 
   if (!user) return;
@@ -44,7 +45,11 @@ const DirectMessageCard = ({
             name={otherUser.displayName ?? ""}
             avatarUrl={otherUser.avatarUrl ?? undefined}
           />
-          <StatusBadge status="offline" />
+          <StatusBadge
+            status={
+              onlineUsers.includes(otherUser?._id ?? "") ? "online" : "offline"
+            }
+          />
           {/* TODO: UNREAD COUNT */}
           {unreadCount > 0 && <UnreadBadge unreadCount={unreadCount} />}
         </>

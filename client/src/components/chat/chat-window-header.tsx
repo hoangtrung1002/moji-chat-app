@@ -6,10 +6,13 @@ import { Separator } from "../ui/separator";
 import UserAvatar from "./user-avatar";
 import StatusBadge from "./status-badge";
 import GroupChatAvatar from "./group-chat-avatar";
+import { useSocketStore } from "@/stores/use-socket-store";
 
 const ChatWindowHeader = ({ chat }: { chat?: IConversation }) => {
   const { conversations, activeConversationId } = useChatStore();
   const { user } = useAuthStore();
+  const { onlineUsers } = useSocketStore();
+
   let otherUser;
   chat =
     chat ??
@@ -50,7 +53,13 @@ const ChatWindowHeader = ({ chat }: { chat?: IConversation }) => {
                   name={otherUser?.displayName || "Moji"}
                   avatarUrl={otherUser?.avatarUrl || undefined}
                 />
-                <StatusBadge status="offline" />
+                <StatusBadge
+                  status={
+                    onlineUsers.includes(otherUser?._id ?? "")
+                      ? "online"
+                      : "offline"
+                  }
+                />
               </>
             ) : (
               <GroupChatAvatar
