@@ -99,3 +99,19 @@ export async function getConversationService(userId: string) {
   });
   return formatted;
 }
+
+export async function getUserConversationsForSocketIO(userId?: string) {
+  try {
+    const conversations = await ConversationModel.find(
+      {
+        "participants.userId": userId,
+      },
+      { _id: 1 } // just return id of conversation
+    );
+
+    return conversations.map((c) => c._id.toString());
+  } catch (error) {
+    console.error("Lỗi khi fetch conversations: ", error);
+    return [];
+  }
+}
