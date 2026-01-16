@@ -1,5 +1,8 @@
+import { Response } from "express";
 import ConversationModel from "../models/Conversation.model";
-import { BadRequestException } from "../utils/app-error";
+import { BadRequestException, NotFoundException } from "../utils/app-error";
+import { HTTPSTATUS } from "../config/http.config";
+import { io } from "../socket";
 
 interface ICreateConversationData {
   type: "direct" | "group";
@@ -114,4 +117,45 @@ export async function getUserConversationsForSocketIO(userId?: string) {
     console.error("Lỗi khi fetch conversations: ", error);
     return [];
   }
+}
+
+export async function isLastMessageExist(conversationId: string) {
+  const conversation = await ConversationModel.findById(conversationId).lean();
+  if (!conversation) throw new NotFoundException("Conversation không tồn tại");
+  const last = conversation.lastMessage;
+
+  return last;
+}
+
+export async function markAsSeenService(
+  conversationId: string,
+  userId: string
+) {
+  const updated = await ConversationModel.findByIdAndUpdate(
+    conversationId,
+    {
+      $addToSet: { seenBy: userId },
+      $set: { [`unreadCounts.${userId}`]: 0 },
+    },
+    {
+      new: true,
+    }
+  );
+
+  io.to(conversationId).emit("read-message", {
+    conversation: updated,
+    lastMessage: {
+      _id: updated?.lastMessage?._id,
+      content: updated?.lastMessage?.content,
+      createdAt: updated?.lastMessage?.createdAt,
+      sender: {
+        _id: updated?.lastMessage?.senderId,
+      },
+    },
+  });
+
+  return {
+    seenBy: updated?.seenBy || [],
+    myUnreadCount: updated?.unreadCounts?.get(userId) || 0,
+  };
 }
