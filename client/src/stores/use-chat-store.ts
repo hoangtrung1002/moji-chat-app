@@ -146,7 +146,7 @@ export const useChatStore = create<IChatState>()(
           console.error("lỗi xảy ra khi add message: ", error);
         }
       },
-      updateConversation: (conversation) => {
+      updateConversation: (conversation: IConversation) => {
         set((state) => ({
           conversations: state.conversations.map((c) =>
             c._id === conversation._id ? { ...c, ...conversation } : c

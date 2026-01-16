@@ -1,13 +1,9 @@
 import { useChatStore } from "@/stores/use-chat-store";
+import type { IConversation, IMessage } from "@/types";
 import ChatWelcomeScreen from "./chat-welcome-screen";
 import MessageItem from "./message-item";
-import type { IConversation, IMessage } from "@/types";
-import { useEffect, useState } from "react";
 
 const ChatWindowBody = () => {
-  const [lastMessageStatus, setLastMessageStatus] = useState<
-    "delivered" | "seen"
-  >("delivered");
   const {
     activeConversationId,
     conversations,
@@ -18,17 +14,8 @@ const ChatWindowBody = () => {
     (c) => c._id === activeConversationId
   );
 
-  // seen status
-  useEffect(() => {
-    const lastMessage = selectedConvo?.lastMessage;
-    if (!lastMessage) {
-      return;
-    }
-
-    const seenBy = selectedConvo?.seenBy ?? [];
-    setLastMessageStatus(seenBy.length > 0 ? "seen" : "delivered");
-  }, [selectedConvo]);
-
+  const seenBy = selectedConvo?.seenBy ?? [];
+  const lastMessageStatus = seenBy.length > 0 ? "seen" : "delivered";
   if (!selectedConvo) return <ChatWelcomeScreen />;
 
   if (!messages?.length)
