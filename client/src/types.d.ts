@@ -43,7 +43,8 @@ interface IChatState {
   // add message
   addMessage: (message: IMessage) => Promise<void>;
   // update conversation
-  updateConversation: (conversation: unknown) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateConversation: (conversation: any) => void;
   markAsSeen: () => Promise<void>;
 }
 
