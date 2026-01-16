@@ -4,9 +4,12 @@ import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import {
   createConversationService,
   getConversationService,
+  isLastMessageExist,
+  markAsSeenService,
 } from "../services/conversation.service";
 import { getMessagesService } from "../services/message.service";
 import { getMessagesQuerySchema } from "../validators/common";
+import { resolve } from "dns";
 
 export const createConversation = asyncHandler(
   async (req: Request, res: Response) => {
@@ -33,3 +36,32 @@ export const getMessages = asyncHandler(async (req: Request, res: Response) => {
   );
   return res.status(HTTPSTATUS.OK).json({ messages, nextCursor });
 });
+
+export const markAsSeenController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { conversationId } = req.params;
+    const userId = req.user?._id;
+
+    const last = await isLastMessageExist(conversationId);
+
+    if (!last) {
+      return res
+        .status(HTTPSTATUS.OK)
+        .json({ message: "Không có tin nhắn để mark as seen" });
+    }
+    if (last.senderId.toString() === userId) {
+      return res
+        .status(HTTPSTATUS.OK)
+        .json({ message: "Sender không cần mark as seen" });
+    }
+
+    const { seenBy, myUnreadCount } = await markAsSeenService(
+      conversationId,
+      userId
+    );
+
+    return res
+      .status(HTTPSTATUS.OK)
+      .json({ message: "Marked as Seen", seenBy, myUnreadCount });
+  }
+);

@@ -43,7 +43,8 @@ interface IChatState {
   // add message
   addMessage: (message: IMessage) => Promise<void>;
   // update conversation
-  updateConversation: (conversation: IConversation) => void;
+  updateConversation: (conversation: unknown) => void;
+  markAsSeen: () => Promise<void>;
 }
 
 interface IAuthState {

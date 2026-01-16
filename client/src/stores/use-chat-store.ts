@@ -1,5 +1,5 @@
 import { chatService } from "@/services/chat-service";
-import type { IChatState } from "@/types";
+import type { IChatState, IConversation } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useAuthStore } from "./use-auth-store";
@@ -152,6 +152,36 @@ export const useChatStore = create<IChatState>()(
             c._id === conversation._id ? { ...c, ...conversation } : c
           ),
         }));
+      },
+      markAsSeen: async () => {
+        try {
+          const { user } = useAuthStore.getState();
+          const { activeConversationId, conversations } = get();
+          if (!activeConversationId || !user) return;
+
+          const covon: IConversation = conversations.find(
+            (c) => c._id === activeConversationId
+          );
+          if ((covon.unreadCounts?.[user._id] ?? 0) === 0) return;
+
+          await chatService.markAsSeen(activeConversationId);
+
+          set((state) => ({
+            conversations: state.conversations.map((c) =>
+              c._id === activeConversationId && c.lastMessage
+                ? {
+                    ...c,
+                    unreadCounts: {
+                      ...c.unreadCounts,
+                      [user._id]: 0,
+                    },
+                  }
+                : c
+            ),
+          }));
+        } catch (error) {
+          console.error("Lỗi xảy ra khi gọi markAsSeen trong store:", error);
+        }
       },
     }),
     {

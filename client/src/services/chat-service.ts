@@ -1,4 +1,4 @@
-import { fetchData, postData } from "@/lib/axios";
+import api, { fetchData, postData } from "@/lib/axios";
 import type {
   IConversationResponse,
   ISendMessageResponse,
@@ -54,5 +54,10 @@ export const chatService = {
       imgUrl,
     });
     return response.message;
+  },
+
+  async markAsSeen(conversationId: string) {
+    const res = await api.patch(`/conversations/${conversationId}/seen`);
+    return res.data;
   },
 };
