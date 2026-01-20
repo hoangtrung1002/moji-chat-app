@@ -13,15 +13,16 @@ export const authMe = asyncHandler(async (req: Request, res: Response) => {
 
 export const searchUserController = asyncHandler(
   async (req: Request, res: Response) => {
-    const usernameRaw = req.user.username;
+    const me = req.user._id;
+    const usernameRaw = req.query.username;
     const username = typeof usernameRaw === "string" ? usernameRaw.trim() : "";
     if (!username)
       return res
         .status(HTTPSTATUS.BAD_REQUEST)
         .json({ message: "Cần cung cấp username trong query." });
 
-    const user = await searchUserService(username);
+    const { user, isAlreadyFriend } = await searchUserService(me, username);
 
-    return res.status(HTTPSTATUS.OK).json({ user });
+    return res.status(HTTPSTATUS.OK).json({ user, isAlreadyFriend });
   },
 );
