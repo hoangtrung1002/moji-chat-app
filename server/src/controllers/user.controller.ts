@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import { HTTPSTATUS } from "../config/http.config";
 import { UnauthorizedException } from "../utils/app-error";
+import { searchUserService } from "../services/user.service";
 
 export const authMe = asyncHandler(async (req: Request, res: Response) => {
   const user = req.user; // retrieve from middleware
@@ -10,6 +11,18 @@ export const authMe = asyncHandler(async (req: Request, res: Response) => {
   return res.status(HTTPSTATUS.OK).json({ user });
 });
 
-export const test = asyncHandler(async (req: Request, res: Response) => {
-  return res.sendStatus(204);
-});
+export const searchUserController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const me = req.user._id;
+    const usernameRaw = req.query.username;
+    const username = typeof usernameRaw === "string" ? usernameRaw.trim() : "";
+    if (!username)
+      return res
+        .status(HTTPSTATUS.BAD_REQUEST)
+        .json({ message: "Cần cung cấp username trong query." });
+
+    const { user, isAlreadyFriend } = await searchUserService(me, username);
+
+    return res.status(HTTPSTATUS.OK).json({ user, isAlreadyFriend });
+  },
+);
