@@ -17,19 +17,19 @@ const ChatWindowHeader = ({ chat }: { chat?: IConversation }) => {
   chat =
     chat ??
     conversations.find(
-      (conversation) => conversation._id === activeConversationId
+      (conversation) => conversation._id === activeConversationId,
     );
 
   if (!chat)
     return (
-      <header className="sticky top-0 z-10 flex items-center w-full gap-2 px-4 py-2 md:hidden">
+      <header className="md:hidden sticky top-0 z-10 flex items-center gap-2 px-4 py-2 w-full">
         <SidebarTrigger className="-ml-1 text-foreground" />
       </header>
     );
 
   if (chat.type === "direct") {
     const otherUsers = chat.participants.filter(
-      (participant) => participant._id !== user?._id
+      (participant) => participant._id !== user?._id,
     );
     otherUser = otherUsers.length > 0 ? otherUsers[0] : null;
 
@@ -37,22 +37,25 @@ const ChatWindowHeader = ({ chat }: { chat?: IConversation }) => {
   }
 
   return (
-    <header className="sticky top-0 z-10 flex items-center px-4 py-2 bg-background">
-      <div className="flex items-center w-full gap-2">
+    <header className="sticky top-0 z-10 px-4 py-2 flex items-center bg-background">
+      <div className="flex items-center gap-2 w-full">
         <SidebarTrigger className="-ml-1 text-foreground" />
         <Separator
           orientation="vertical"
           className="mr-2 data-[orientation=vertical]:h-4"
         />
-        <div className="flex items-center w-full gap-3 p-2">
+
+        <div className="p-2 w-full flex items-center gap-3">
+          {/* avatar */}
           <div className="relative">
             {chat.type === "direct" ? (
               <>
                 <UserAvatar
-                  type="sidebar"
+                  type={"sidebar"}
                   name={otherUser?.displayName || "Moji"}
                   avatarUrl={otherUser?.avatarUrl || undefined}
                 />
+                {/* todo: socket io */}
                 <StatusBadge
                   status={
                     onlineUsers.includes(otherUser?._id ?? "")
@@ -68,6 +71,8 @@ const ChatWindowHeader = ({ chat }: { chat?: IConversation }) => {
               />
             )}
           </div>
+
+          {/* name */}
           <h2 className="font-semibold text-foreground">
             {chat.type === "direct" ? otherUser?.displayName : chat.group?.name}
           </h2>

@@ -11,7 +11,7 @@ interface IFetchMessagesProp {
   cursor?: string;
 }
 
-const pageLimit = 50;
+const pageLimit = 20;
 
 export const chatService = {
   async fetchConversations(): Promise<IConversationResponse> {
@@ -20,19 +20,19 @@ export const chatService = {
   },
   async fetchMessages(
     id: string,
-    cursor?: string
+    cursor?: string,
   ): Promise<IFetchMessagesProp> {
     const response = await fetchData<IFetchMessagesResponse>(
-      `/conversations/${id}/messages?limit=${pageLimit}&cursor=${cursor}`
+      `/conversations/${id}/messages?limit=${pageLimit}&cursor=${cursor}`,
     );
-    return { messages: response.messages, cursor: response.cursor };
+    return { messages: response.messages, cursor: response.nextCursor };
   },
 
   async sendDirectMessage(
     recipientId: string,
     content: string = "",
     imgUrl?: string,
-    conversationId?: string
+    conversationId?: string,
   ) {
     const response = await postData<ISendMessageResponse>("/message/direct", {
       recipientId,
@@ -46,7 +46,7 @@ export const chatService = {
   async sendGroupMessage(
     conversationId: string,
     content: string = "",
-    imgUrl?: string
+    imgUrl?: string,
   ) {
     const response = await postData<ISendMessageResponse>("/message/group", {
       conversationId,

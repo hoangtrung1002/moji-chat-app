@@ -13,7 +13,7 @@ export async function sendDirectMessageService(
   recipientId: string,
   content: string,
   conversationId: string,
-  senderId: string
+  senderId: string,
 ) {
   let conversation;
   if (!content) throw new BadRequestException("Thiếu nội dung");
@@ -48,11 +48,11 @@ export async function sendDirectMessageService(
 export async function getMessagesService(
   conversationId: string,
   limit: number,
-  cursor?: string
+  cursor?: string,
 ) {
   const query: Record<string, unknown> = { conversationId };
   if (cursor) {
-    query.createAt = { $lt: new Date(cursor) };
+    query.createdAt = { $lt: new Date(cursor) };
   }
   let messages = await MessageModel.find(query)
     .sort({ createdAt: -1 })
@@ -72,7 +72,7 @@ export async function sendGroupMessageService(
   conversationId: string,
   content: string,
   senderId: string,
-  conversation?: ConversationDocument
+  conversation?: ConversationDocument,
 ) {
   if (!conversation)
     throw new BadRequestException("Không tìm thấy cuộc trò chuyện");

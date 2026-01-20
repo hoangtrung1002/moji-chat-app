@@ -33,12 +33,12 @@ interface IChatState {
   sendDirectMessage: (
     recipientId: string,
     content: string,
-    imgUrl?: string
+    imgUrl?: string,
   ) => Promise<void>;
   sendGroupMessage: (
     conversationId: string,
     content: string,
-    imgUrl?: string
+    imgUrl?: string,
   ) => Promise<void>;
   // add message
   addMessage: (message: IMessage) => Promise<void>;
@@ -59,7 +59,7 @@ interface IAuthState {
     password: string,
     email: string,
     firstName: string,
-    lastName: string
+    lastName: string,
   ) => Promise<void>;
   signIn: (identifier: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -166,7 +166,7 @@ interface IRefreshResponse {
 
 interface IFetchMessagesResponse {
   messages: IMessage[];
-  cursor?: string;
+  nextCursor?: string;
 }
 
 interface ISendMessageResponse {

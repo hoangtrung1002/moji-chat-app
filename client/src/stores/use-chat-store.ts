@@ -41,15 +41,17 @@ export const useChatStore = create<IChatState>()(
         if (!convoId) return;
 
         const current = messages?.[convoId];
+
         const nextCursor =
           current?.nextCursor === undefined ? "" : current?.nextCursor;
         if (nextCursor === null) return;
+
         set({ messageLoading: true });
 
         try {
           const { messages: data, cursor } = await chatService.fetchMessages(
             convoId,
-            nextCursor
+            nextCursor,
           );
 
           const processed = data.map((message) => ({
@@ -86,12 +88,12 @@ export const useChatStore = create<IChatState>()(
             recipientId,
             content,
             imgUrl,
-            activeConversationId || undefined
+            activeConversationId || undefined,
           );
 
           set((state) => ({
             conversations: state.conversations.map((c) =>
-              c._id === activeConversationId ? { ...c, seenBy: [] } : c
+              c._id === activeConversationId ? { ...c, seenBy: [] } : c,
             ),
           }));
         } catch (error) {
@@ -103,7 +105,7 @@ export const useChatStore = create<IChatState>()(
           await chatService.sendGroupMessage(conversationId, content, imgUrl);
           set((state) => ({
             conversations: state.conversations.map((c) =>
-              c._id === get().activeConversationId ? { ...c, seenBy: [] } : c
+              c._id === get().activeConversationId ? { ...c, seenBy: [] } : c,
             ),
           }));
         } catch (error) {
@@ -149,7 +151,7 @@ export const useChatStore = create<IChatState>()(
       updateConversation: (conversation: IConversation) => {
         set((state) => ({
           conversations: state.conversations.map((c) =>
-            c._id === conversation._id ? { ...c, ...conversation } : c
+            c._id === conversation._id ? { ...c, ...conversation } : c,
           ),
         }));
       },
@@ -160,7 +162,7 @@ export const useChatStore = create<IChatState>()(
           if (!activeConversationId || !user) return;
 
           const covon: IConversation = conversations.find(
-            (c) => c._id === activeConversationId
+            (c) => c._id === activeConversationId,
           );
           if ((covon.unreadCounts?.[user._id] ?? 0) === 0) return;
 
@@ -176,7 +178,7 @@ export const useChatStore = create<IChatState>()(
                       [user._id]: 0,
                     },
                   }
-                : c
+                : c,
             ),
           }));
         } catch (error) {
@@ -187,6 +189,6 @@ export const useChatStore = create<IChatState>()(
     {
       name: "chat-storage",
       partialize: (state) => ({ conversations: state.conversations }),
-    }
-  )
+    },
+  ),
 );

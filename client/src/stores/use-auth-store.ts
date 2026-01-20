@@ -28,10 +28,10 @@ export const useAuthStore = create<IAuthState>()(
             password,
             email,
             firstName,
-            lastName
+            lastName,
           );
           toast.success(
-            "Đăng ký thành công! Bạn sẽ được chuyển sang trang đăng nhập."
+            "Đăng ký thành công! Bạn sẽ được chuyển sang trang đăng nhập.",
           );
         } catch (error: any) {
           console.error(error);
@@ -45,12 +45,9 @@ export const useAuthStore = create<IAuthState>()(
           get().clearState();
           set({ loading: true });
 
-          // localStorage.clear();
-          // useChatStore.getState().reset();
-
           const { accessToken } = await authService.signIn(
             identifier,
-            password
+            password,
           );
           get().setAccessToken(accessToken);
           await get().fetchMe();
@@ -116,6 +113,6 @@ export const useAuthStore = create<IAuthState>()(
       partialize: (state) => ({
         user: state.user,
       }),
-    }
-  )
+    },
+  ),
 );

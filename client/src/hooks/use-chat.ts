@@ -4,19 +4,24 @@ import type { IConversation } from "@/types";
 import { useState } from "react";
 import { toast } from "sonner";
 
-// interface IProp {
-//   selectedConvo?: IConversation;
-// }
-
 const useChat = (selectedConvo?: IConversation) => {
-  const { fetchMessages } = useChatStore();
-  const { activeConversationId, setActiveConversation, messages } =
-    useChatStore();
+  const {
+    activeConversationId,
+    setActiveConversation,
+    fetchMessages,
+    messages,
+    conversations,
+  } = useChatStore();
   const { sendDirectMessage, sendGroupMessage } = useChatStore();
   const { user } = useAuthStore();
   const [value, setValue] = useState("");
+  const messageItems = messages[activeConversationId!]?.items ?? [];
+  const reversedMessages = [...messageItems].reverse();
+  const hasMore = messages[activeConversationId!]?.hasMore ?? false;
+
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
+
     if (!messages[id]) {
       await fetchMessages();
     }
@@ -48,14 +53,29 @@ const useChat = (selectedConvo?: IConversation) => {
     }
   };
 
+  const fetchMoreMessages = async () => {
+    if (!activeConversationId) return;
+
+    try {
+      await fetchMessages(activeConversationId);
+    } catch (error) {
+      console.error("Lỗi xảy ra khi fetch thêm tin nhắn", error);
+    }
+  };
+
   return {
     handleKeyPress,
     handleSelectConversation,
-    value,
+    fetchMoreMessages,
     setValue,
     sendMessage,
+    value,
+    conversations,
     activeConversationId,
     messages,
+    reversedMessages,
+    hasMore,
+    messageItems,
   };
 };
 
