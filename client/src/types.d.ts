@@ -66,6 +66,13 @@ interface IAuthState {
   fetchMe: () => Promise<void>;
   refresh: () => Promise<void>;
 }
+
+interface IFriendStore {
+  loading: boolean;
+  searchUsername: (username: string) => Promise<ISearchUsernameResponse | null>;
+  addFriend: (to: string, message?: string) => Promise<string>;
+}
+
 interface IUser {
   _id: string;
   username: string;
@@ -144,6 +151,14 @@ interface IConversation {
   updatedAt: string;
 }
 
+interface IRequest {
+  from: string;
+  to: string;
+  message?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface IConversationResponse {
   conversations: IConversation[];
 }
@@ -171,4 +186,12 @@ interface IFetchMessagesResponse {
 
 interface ISendMessageResponse {
   message: IMessage;
+}
+interface ISearchUsernameResponse {
+  user: IUser;
+  isAlreadyFriend: boolean;
+}
+
+interface ISendFriendRequestResponse extends IDefaultResponse {
+  request: IRequest;
 }
