@@ -40,9 +40,7 @@ export function SigninForm({
                   {...register("identifier")}
                 />
                 {errors.identifier && (
-                  <p className="text-destructive text-sm">
-                    {errors.identifier.message}
-                  </p>
+                  <p className="error-message">{errors.identifier.message}</p>
                 )}
               </div>
               {/* password */}
@@ -56,9 +54,7 @@ export function SigninForm({
                   {...register("password")}
                 />
                 {errors.password && (
-                  <p className="text-destructive text-sm">
-                    {errors.password.message}
-                  </p>
+                  <p className="error-message">{errors.password.message}</p>
                 )}
               </div>
               {/* submit action */}
