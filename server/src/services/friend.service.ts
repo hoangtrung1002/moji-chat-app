@@ -6,11 +6,11 @@ import { BadRequestException, NotFoundException } from "../utils/app-error";
 export async function sendFriendRequestService(
   from: string,
   to: string,
-  message: string
+  message: string,
 ) {
   if (from === to)
     throw new BadRequestException(
-      "Không thể gửi lời mời kết bạn cho chính mình"
+      "Không thể gửi lời mời kết bạn cho chính mình",
     );
 
   const userExists = await UserModel.exists({ _id: to });
@@ -42,7 +42,7 @@ export async function sendFriendRequestService(
 
 export async function acceptFriendRequestService(
   requestId: string,
-  userId: string
+  userId: string,
 ) {
   const request = await friendRequestModel.findById(requestId);
   if (!request) throw new NotFoundException("Không tìm thấy lời mời kết bạn");
@@ -71,7 +71,7 @@ export async function acceptFriendRequestService(
 
 export async function declineFriendRequestService(
   requestId: string,
-  userId: string
+  userId: string,
 ) {
   const request = await friendRequestModel.findById(requestId);
   if (!request) throw new NotFoundException("Không tìm thấy lời mời kết bạn");
@@ -95,14 +95,14 @@ export async function getAllFriendsService(userId: string) {
   const friends = friendships.map((friend) =>
     friend.userA._id.toString() === userId.toString()
       ? friend.userB
-      : friend.userA
+      : friend.userA,
   );
 
   return friends;
 }
 
 export async function getFriendRequestService(userId: string) {
-  const populatedFields = "_id displayName avatarUrl";
+  const populatedFields = "_id username displayName avatarUrl";
   const [sent, received] = await Promise.all([
     friendRequestModel.find({ from: userId }).populate("to", populatedFields),
     friendRequestModel.find({ to: userId }).populate("from", populatedFields),
