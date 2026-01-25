@@ -69,8 +69,13 @@ interface IAuthState {
 
 interface IFriendStore {
   loading: boolean;
+  receivedList: IFriendRequest[];
+  sentList: IFriendRequest[];
   searchUsername: (username: string) => Promise<ISearchUsernameResponse | null>;
   addFriend: (to: string, message?: string) => Promise<string>;
+  getAllFriendRequests: () => Promise<void>;
+  acceptRequest: (requestId: string) => Promise<void>;
+  declineRequest: (requestId: string) => Promise<void>;
 }
 
 interface IUser {
@@ -92,10 +97,12 @@ interface IFriend {
 }
 
 interface IFriendRequest {
-  id: string;
-  username: string;
-  displayName: string;
-  avatarUrl?: string;
+  _id: string;
+  from?: IFriend;
+  to?: IFriend;
+  message?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface IGroup {
@@ -152,6 +159,7 @@ interface IConversation {
 }
 
 interface IRequest {
+  _id: string;
   from: string;
   to: string;
   message?: string;
@@ -194,4 +202,21 @@ interface ISearchUsernameResponse {
 
 interface ISendFriendRequestResponse extends IDefaultResponse {
   request: IRequest;
+}
+
+interface IGetAllFriendRequestResponse {
+  sent: Array<
+    Omit<IRequest, "to"> & {
+      to: IFriend;
+    }
+  >;
+  received: Array<
+    Omit<IRequest, "from"> & {
+      from: IFriend;
+    }
+  >;
+}
+
+interface IAcceptRequestResponse extends IDefaultResponse {
+  newFriend: IUSer;
 }

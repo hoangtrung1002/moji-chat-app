@@ -1,5 +1,5 @@
 import type { IFormValues } from "@/components/chat/add-friend-modal";
-import { userFriendStore } from "@/stores/use-friend-store";
+import { useFriendStore } from "@/stores/use-friend-store";
 import type { IUser } from "@/types";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -10,7 +10,7 @@ const useAddFriend = () => {
   const [searchUser, setSearchUser] = useState<IUser>();
   const [isFriend, setIsFriend] = useState<boolean>(false);
   const [searchedUsername, setSearchedUsername] = useState("");
-  const { loading, searchUsername, addFriend } = userFriendStore();
+  const { loading, searchUsername, addFriend } = useFriendStore();
   const {
     register,
     handleSubmit,
