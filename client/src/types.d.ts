@@ -26,6 +26,7 @@ interface IChatState {
   activeConversationId: string | null;
   convoLoading: boolean;
   messageLoading: boolean;
+  loading: boolean;
   reset: () => void;
   setActiveConversation: (id: string | null) => void;
   fetchConversations: () => Promise<void>;
@@ -46,6 +47,12 @@ interface IChatState {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateConversation: (conversation: any) => void;
   markAsSeen: () => Promise<void>;
+  addConversation: (conversation: IConversation) => void;
+  createConversation: (
+    type: "group" | "direct",
+    name: string,
+    memberIds: string[],
+  ) => Promise<void>;
 }
 
 interface IAuthState {
@@ -69,6 +76,7 @@ interface IAuthState {
 
 interface IFriendStore {
   loading: boolean;
+  friends: IFriend[];
   receivedList: IFriendRequest[];
   sentList: IFriendRequest[];
   searchUsername: (username: string) => Promise<ISearchUsernameResponse | null>;
@@ -76,6 +84,7 @@ interface IFriendStore {
   getAllFriendRequests: () => Promise<void>;
   acceptRequest: (requestId: string) => Promise<void>;
   declineRequest: (requestId: string) => Promise<void>;
+  getFriends: () => Promise<void>;
 }
 
 interface IUser {
@@ -205,18 +214,18 @@ interface ISendFriendRequestResponse extends IDefaultResponse {
 }
 
 interface IGetAllFriendRequestResponse {
-  sent: Array<
-    Omit<IRequest, "to"> & {
-      to: IFriend;
-    }
-  >;
-  received: Array<
-    Omit<IRequest, "from"> & {
-      from: IFriend;
-    }
-  >;
+  sent: IFriendRequest[];
+  received: IFriendRequest[];
 }
 
 interface IAcceptRequestResponse extends IDefaultResponse {
   newFriend: IUSer;
+}
+
+interface IGetFriendListResponse {
+  friends: IFriend[];
+}
+
+interface ICreateConversationResponse {
+  conversation: IConversation;
 }

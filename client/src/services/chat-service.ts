@@ -1,9 +1,10 @@
 import api, { fetchData, postData } from "@/lib/axios";
 import type {
   IConversationResponse,
-  ISendMessageResponse,
+  ICreateConversationResponse,
   IFetchMessagesResponse,
   IMessage,
+  ISendMessageResponse,
 } from "@/types";
 
 interface IFetchMessagesProp {
@@ -11,7 +12,7 @@ interface IFetchMessagesProp {
   cursor?: string;
 }
 
-const pageLimit = 20;
+const pageLimit = 50;
 
 export const chatService = {
   async fetchConversations(): Promise<IConversationResponse> {
@@ -59,5 +60,17 @@ export const chatService = {
   async markAsSeen(conversationId: string) {
     const res = await api.patch(`/conversations/${conversationId}/seen`);
     return res.data;
+  },
+  async createConversation(
+    type: "direct" | "group",
+    name: string,
+    memberIds: string[],
+  ) {
+    const res = await postData<ICreateConversationResponse>("/conversations", {
+      type,
+      name,
+      memberIds,
+    });
+    return res.conversation;
   },
 };

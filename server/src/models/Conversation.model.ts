@@ -1,6 +1,6 @@
 import mongoose, { HydratedDocument } from "mongoose";
 
-interface IParticipant {
+export interface IParticipant {
   userId: mongoose.Types.ObjectId;
   joinedAt: Date;
 }
@@ -38,7 +38,7 @@ const participantsSchema = new mongoose.Schema<IParticipant>(
     },
     joinedAt: { type: Date, default: Date.now },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const groupSchema = new mongoose.Schema<IGroup>(
@@ -46,7 +46,7 @@ const groupSchema = new mongoose.Schema<IGroup>(
     name: { type: String, trim: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const lastMessageSchema = new mongoose.Schema<ILastMessage>(
@@ -56,7 +56,7 @@ const lastMessageSchema = new mongoose.Schema<ILastMessage>(
     senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     createdAt: { type: Date, default: null },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const conversationSchema = new mongoose.Schema<IConversation>(
@@ -98,7 +98,7 @@ const conversationSchema = new mongoose.Schema<IConversation>(
       default: {},
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 conversationSchema.index({
@@ -108,7 +108,7 @@ conversationSchema.index({
 
 const ConversationModel = mongoose.model<IConversation>(
   "Conversation",
-  conversationSchema
+  conversationSchema,
 );
 
 export default ConversationModel;
