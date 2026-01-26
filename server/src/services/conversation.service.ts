@@ -1,8 +1,7 @@
-import { Response } from "express";
 import ConversationModel from "../models/Conversation.model";
-import { BadRequestException, NotFoundException } from "../utils/app-error";
-import { HTTPSTATUS } from "../config/http.config";
 import { io } from "../socket";
+import { BadRequestException, NotFoundException } from "../utils/app-error";
+import { formattedParticipants } from "../utils/helper";
 
 interface ICreateConversationData {
   type: "direct" | "group";
@@ -12,7 +11,7 @@ interface ICreateConversationData {
 
 export async function createConversationService(
   data: ICreateConversationData,
-  userId: string
+  userId: string,
 ) {
   const { type, name, memberIds } = data;
   console.log("create conversation....");
@@ -25,7 +24,7 @@ export async function createConversationService(
     memberIds.length === 0
   )
     throw new BadRequestException(
-      "Tên nhóm và danh sách thành viên là bắt buộc"
+      "Tên nhóm và danh sách thành viên là bắt buộc",
     );
   let conversation;
   if (type === "direct") {
@@ -60,7 +59,11 @@ export async function createConversationService(
     { path: "seenBy", select: "displayName avatarUrl" },
     { path: "lastMessage.senderId", select: "displayName avatarUrl" },
   ]);
-  return conversation;
+
+  const participants = formattedParticipants(conversation.participants);
+  const formatted = { ...conversation.toObject(), participants };
+
+  return formatted;
 }
 
 export async function getConversationService(userId: string) {
@@ -82,17 +85,7 @@ export async function getConversationService(userId: string) {
     });
 
   const formatted = conversations.map((conversation) => {
-    const participants = (conversation.participants || []).map(
-      (participant) => {
-        const member = participant.userId as any;
-        return {
-          _id: member._id,
-          displayName: member.displayName,
-          avatarUrl: member?.avatarUrl ?? null,
-          joinedAt: participant.joinedAt,
-        };
-      }
-    );
+    const participants = formattedParticipants(conversation.participants);
     return {
       ...conversation.toObject(),
       // unreadCounts: mapToObject(conversation.unreadCounts),
@@ -109,7 +102,7 @@ export async function getUserConversationsForSocketIO(userId?: string) {
       {
         "participants.userId": userId,
       },
-      { _id: 1 } // just return id of conversation
+      { _id: 1 }, // just return id of conversation
     );
 
     return conversations.map((c) => c._id.toString());
@@ -129,7 +122,7 @@ export async function isLastMessageExist(conversationId: string) {
 
 export async function markAsSeenService(
   conversationId: string,
-  userId: string
+  userId: string,
 ) {
   const updated = await ConversationModel.findByIdAndUpdate(
     conversationId,
@@ -139,7 +132,7 @@ export async function markAsSeenService(
     },
     {
       new: true,
-    }
+    },
   );
 
   io.to(conversationId).emit("read-message", {

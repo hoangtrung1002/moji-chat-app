@@ -86,8 +86,8 @@ export async function getAllFriendsService(userId: string) {
     .find({
       $or: [{ userA: userId }, { userB: userId }],
     })
-    .populate("userA", "_id displayName avatarUrl")
-    .populate("userB", "_id displayName avatarUrl")
+    .populate("userA", "_id username displayName avatarUrl")
+    .populate("userB", "_id username displayName avatarUrl")
     .lean();
 
   if (!friendships) return [];

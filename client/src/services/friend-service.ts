@@ -2,6 +2,7 @@ import { fetchData, postData } from "@/lib/axios";
 import type {
   IAcceptRequestResponse,
   IGetAllFriendRequestResponse,
+  IGetFriendListResponse,
   ISearchUsernameResponse,
   ISendFriendRequestResponse,
 } from "@/types";
@@ -49,5 +50,9 @@ export const friendService = {
     } catch (error) {
       console.error("Lỗi khi gửi declineRequest", error);
     }
+  },
+  async getFriendList() {
+    const res = await fetchData<IGetFriendListResponse>("/friends");
+    return res.friends;
   },
 };
