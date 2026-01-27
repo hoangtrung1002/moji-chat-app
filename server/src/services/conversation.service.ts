@@ -63,6 +63,12 @@ export async function createConversationService(
   const participants = formattedParticipants(conversation.participants);
   const formatted = { ...conversation.toObject(), participants };
 
+  if (type === "group") {
+    memberIds.forEach((userId) => {
+      io.to(userId).emit("new-group", formatted);
+    });
+  }
+
   return formatted;
 }
 

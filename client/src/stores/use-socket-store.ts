@@ -1,4 +1,4 @@
-import type { ISocketState } from "@/types";
+import type { IConversation, ISocketState } from "@/types";
 import { io, type Socket } from "socket.io-client";
 import { create } from "zustand";
 import { useAuthStore } from "./use-auth-store";
@@ -65,6 +65,12 @@ export const useSocketStore = create<ISocketState>((set, get) => ({
         seenBy: conversation.seenBy,
       };
       useChatStore.getState().updateConversation(updated);
+    });
+
+    // new group chat
+    socket.on("new-group", (conversation: IConversation) => {
+      useChatStore.getState().addConversation(conversation);
+      socket.emit("join-conversation", conversation._id);
     });
   },
   disconnectSocket: () => {
