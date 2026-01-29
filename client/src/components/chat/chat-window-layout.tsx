@@ -1,11 +1,11 @@
 import { useChatStore } from "@/stores/use-chat-store";
 import ChatWelcomeScreen from "./chat-welcome-screen";
-import ChatWindowSkeleton from "./chat-window-skeleton";
 import { SidebarInset } from "../ui/sidebar";
 import ChatWindowHeader from "./chat-window-header";
 import ChatWindowBody from "./chat-window-body";
 import MessageInput from "./message-input";
 import { useEffect } from "react";
+import ChatWindowSkeleton from "../skeleton/chat-window-skeleton";
 
 const ChatWindowLayout = () => {
   const {

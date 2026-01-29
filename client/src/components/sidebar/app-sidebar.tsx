@@ -6,7 +6,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -14,19 +13,22 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useAuthStore } from "@/stores/use-auth-store";
+import { useThemeStore } from "@/stores/use-theme-store";
 import AddFriendModal from "../chat/add-friend-modal";
 import CreateNewChat from "../chat/create-new-chat";
 import DirectMessageList from "../chat/direct-message-list";
 import GroupChatList from "../chat/group-chat-list";
 import NewGroupChatModal from "../chat/new-group-chat-modal";
 import { Switch } from "../ui/switch";
-import { useThemeStore } from "@/stores/use-theme-store";
-import { useAuthStore } from "@/stores/use-auth-store";
 import { NavUser } from "./nav-user";
+import ConversationSkeleton from "../skeleton/conversation-skeleton";
+import { useChatStore } from "@/stores/use-chat-store";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isDark, toggleTheme } = useThemeStore();
   const { user } = useAuthStore();
+  const { convoLoading } = useChatStore();
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -77,19 +79,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </div>
 
           <SidebarGroupContent>
-            <GroupChatList />
+            {convoLoading ? <ConversationSkeleton /> : <GroupChatList />}
           </SidebarGroupContent>
         </SidebarGroup>
 
         {/* Dirrect Message */}
         <SidebarGroup>
-          <SidebarGroupLabel className="uppercase">bạn bè</SidebarGroupLabel>
-          <SidebarGroupAction title="Kết Bạn" className="cursor-pointer">
+          <div className="flex items-center justify-between">
+            <SidebarGroupLabel className="uppercase">bạn bè</SidebarGroupLabel>
             <AddFriendModal />
-          </SidebarGroupAction>
-
+          </div>
           <SidebarGroupContent>
-            <DirectMessageList />
+            {convoLoading ? <ConversationSkeleton /> : <DirectMessageList />}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
