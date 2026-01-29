@@ -20,10 +20,12 @@ import type { IUser } from "@/types";
 import SignOut from "../auth/signout";
 import { useState } from "react";
 import FriendRequestDialog from "../friend-request/friend-request-dialog";
+import ProfileDialog from "../profile/profile-dialog";
 
 export function NavUser({ user }: { user: IUser }) {
   const { isMobile } = useSidebar();
   const [friendRequestOpen, setFriendRequestOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   return (
     <>
@@ -74,7 +76,7 @@ export function NavUser({ user }: { user: IUser }) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setProfileOpen(true)}>
                   <UserIcon className="text-muted-foreground dark:group-focus:text-accent-foreground!" />
                   Tài Khoản
                 </DropdownMenuItem>
@@ -99,6 +101,7 @@ export function NavUser({ user }: { user: IUser }) {
         open={friendRequestOpen}
         setOpen={setFriendRequestOpen}
       />
+      <ProfileDialog open={profileOpen} setOpen={setProfileOpen} />
     </>
   );
 }

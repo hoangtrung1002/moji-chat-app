@@ -1,3 +1,4 @@
+import type { AxiosResponse } from "axios";
 import type { Socket } from "socket.io-client";
 
 interface IThemeState {
@@ -57,9 +58,10 @@ interface IChatState {
 
 interface IAuthState {
   accessToken: string | null;
-  setAccessToken: (accessToken: string) => void;
   user: IUser | null;
   loading: boolean;
+  setUser: (user: IUser) => void;
+  setAccessToken: (accessToken: string) => void;
   clearState: () => void;
   signUp: (
     username: string,
@@ -72,6 +74,10 @@ interface IAuthState {
   signOut: () => Promise<void>;
   fetchMe: () => Promise<void>;
   refresh: () => Promise<void>;
+}
+
+interface IUserState {
+  updateAvatarUrl: (formData: FormData) => Promise<void>;
 }
 
 interface IFriendStore {
@@ -229,3 +235,8 @@ interface IGetFriendListResponse {
 interface ICreateConversationResponse {
   conversation: IConversation;
 }
+
+type IUploadAvatarResponse = Pick<AxiosResponse, "status"> &
+  IDefaultResponse & {
+    avatarUrl: string;
+  };

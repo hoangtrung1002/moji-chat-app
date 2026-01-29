@@ -41,6 +41,12 @@ const userSchema = new mongoose.Schema<IUser>(
       required: true,
       trim: true,
     },
+    avatarUrl: {
+      type: String, // link CDN để hiển thị hình
+    },
+    avatarId: {
+      type: String, // Cloudinary public_id để xoá hình
+    },
     bio: {
       type: String,
       maxlength: 500,
@@ -52,7 +58,7 @@ const userSchema = new mongoose.Schema<IUser>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 userSchema.post("save", function (error: any, doc: any, next: any) {

@@ -12,6 +12,9 @@ export const useAuthStore = create<IAuthState>()(
       user: null,
       loading: false,
 
+      setUser: (user) => {
+        set({ user });
+      },
       setAccessToken: (accessToken) => set({ accessToken }),
 
       clearState: () => {
@@ -33,6 +36,7 @@ export const useAuthStore = create<IAuthState>()(
           toast.success(
             "Đăng ký thành công! Bạn sẽ được chuyển sang trang đăng nhập.",
           );
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           console.error(error);
           toast.error(error.response.data.message);
